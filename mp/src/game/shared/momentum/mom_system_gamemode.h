@@ -179,6 +179,25 @@ public:
     float GetJumpFactor() override;
 };
 
+class CGameMode_Conc : public CGameModeBase
+{
+  public:
+    GameMode_t GetType() override { return GAMEMODE_CONC; }
+    const char *GetStatusString() override { return "Concussion Grenade Jumping"; }
+    const char *GetDiscordIcon() override { return "mom_icon_conc"; }
+    const char *GetMapPrefix() override { return "conc_"; }
+    const char *GetGameModeCfg() override { return "conc.cfg"; }
+    float GetViewScale() override { return 1.0f; }
+    bool CanBhop() override { return false; }
+
+    float GetJumpFactor() override;
+
+    void SetGameModeVars() override;
+    bool PlayerHasAutoBhop() override { return false; }
+    void OnPlayerSpawn(CMomentumPlayer *pPlayer) override;
+    bool WeaponIsAllowed(WeaponID_t weapon) override;
+};
+
 class CGameModeSystem : public CAutoGameSystem
 {
 public:
@@ -198,8 +217,8 @@ public:
     /// Checks if the game mode is the given one.
     /// (convenience method; functionally equivalent to `GetGameMode()->GetType() == eCheck`)
     bool GameModeIs(GameMode_t eCheck) const { return m_pCurrentGameMode->GetType() == eCheck; }
-    /// Another convenience method to check if the current game mode is a TF2-based one (RJ || SJ)
-    bool IsTF2BasedMode() const { return GameModeIs(GAMEMODE_RJ) || GameModeIs(GAMEMODE_SJ); }
+    /// Another convenience method to check if the current game mode is a TF2-based one (RJ || SJ || CONC)
+    bool IsTF2BasedMode() const { return GameModeIs(GAMEMODE_RJ) || GameModeIs(GAMEMODE_SJ) || GameModeIs(GAMEMODE_CONC); }
     /// Another convenience method to check if the current game mode is a CS-based one (Surf || Bhop || KZ || Unknown)
     bool IsCSBasedMode() const { return GameModeIs(GAMEMODE_SURF) || GameModeIs(GAMEMODE_BHOP) ||
                                         GameModeIs(GAMEMODE_KZ) || GameModeIs(GAMEMODE_UNKNOWN); }

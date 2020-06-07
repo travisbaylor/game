@@ -229,6 +229,37 @@ bool CGameMode_SJ::HasCapability(GameModeHUDCapability_t capability)
     return capability == GameModeHUDCapability_t::CAP_HUD_KEYPRESS_ATTACK;
 }
 
+void CGameMode_Conc::SetGameModeVars()
+{
+    CGameModeBase::SetGameModeVars();
+
+    // Conc-specific
+    sv_airaccelerate.SetValue(10);
+    sv_accelerate.SetValue(14);
+    sv_maxspeed.SetValue(400);
+    sv_stopspeed.SetValue(100);
+    sv_considered_on_ground.SetValue(2);
+    sv_duck_collision_fix.SetValue(false);
+}
+
+void CGameMode_Conc::OnPlayerSpawn(CMomentumPlayer *pPlayer)
+{
+#ifdef GAME_DLL
+    pPlayer->GiveWeapon(WEAPON_CONCGRENADE);
+#endif
+}
+
+bool CGameMode_Conc::WeaponIsAllowed(WeaponID_t weapon)
+{
+    return weapon == WEAPON_CONCGRENADE ||
+           weapon == WEAPON_PAINTGUN;
+}
+
+float CGameMode_Conc::GetJumpFactor()
+{
+    return 268.6261f; // sqrt(2 * 800.0f * 45.1f)
+}
+
 void CGameMode_Tricksurf::SetGameModeVars()
 {
     CGameModeBase::SetGameModeVars();
@@ -290,6 +321,7 @@ CGameModeSystem::CGameModeSystem() : CAutoGameSystem("CGameModeSystem")
     m_vecGameModes.AddToTail(new CGameMode_SJ);
     m_vecGameModes.AddToTail(new CGameMode_Tricksurf);
     m_vecGameModes.AddToTail(new CGameMode_Ahop);
+    m_vecGameModes.AddToTail(new CGameMode_Conc);
 }
 
 CGameModeSystem::~CGameModeSystem()
