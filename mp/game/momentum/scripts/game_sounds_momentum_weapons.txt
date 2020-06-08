@@ -196,7 +196,7 @@
 
 "ConcussionGrenade.Timer"
 {
-    "channel"       "CHAN_WEAPON"
+    "channel"       "CHAN_AUTO"
     "volume"        "VOL_NORM"
     "pitch"         "PITCH_NORM"
     "soundlevel"    "SNDLVL_90dB"
