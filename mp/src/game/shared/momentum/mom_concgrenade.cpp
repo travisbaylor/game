@@ -94,6 +94,7 @@ void CMomConcProjectile::Spawn()
     SetNextClientThink(gpGlobals->curtime);
 #else
     SetModel(g_pWeaponDef->GetWeaponModel(WEAPON_CONCGRENADE, "world"));
+    SetSize(Vector(-4.051, -3.714, -4.333), Vector(3.822, 3.962, 3.02));
     SetSolid(SOLID_BBOX);
     SetSolidFlags(FSOLID_NOT_STANDABLE);
     SetCollisionGroup(COLLISION_GROUP_PROJECTILE);
