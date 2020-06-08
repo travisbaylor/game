@@ -39,6 +39,7 @@
 #ifdef DEBUG
 static MAKE_TOGGLE_CONVAR(mom_conc_debug_show_radius, "0", FCVAR_DEVELOPMENTONLY, "Show conc explosion radius (for debugging).\n");
 #endif
+static MAKE_TOGGLE_CONVAR(mom_conc_glow_enable, "1", FCVAR_ARCHIVE, "Toggle the conc glow sprite.\n");
 
 #ifdef CLIENT_DLL
 int g_iConcRingTexture = -1;
@@ -117,7 +118,9 @@ void CMomConcProjectile::Spawn()
     m_bIsOn = false;
 
     CreateTrail();
-    CreateGlowSprite();
+
+    if(mom_conc_glow_enable.GetBool())
+        CreateGlowSprite();
 
     SetThink(&CMomConcProjectile::GrenadeThink);
     SetNextThink(gpGlobals->curtime);
