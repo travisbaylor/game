@@ -1,10 +1,8 @@
 #include "cbase.h"
 
 #include "weapon_mom_concgrenade.h"
-
-#include "datacache/imdlcache.h"
-#include "in_buttons.h"
 #include "mom_player_shared.h"
+#include "in_buttons.h"
 
 #ifdef GAME_DLL
 #include "momentum/ghost_client.h"
@@ -17,6 +15,8 @@
 #define CONC_THROW_DELAY 0.5f
 #define CONC_THROWSPEED 660.0f
 #define CONC_SPAWN_ANG_X 18.5f
+
+static MAKE_TOGGLE_CONVAR(mom_conc_dropdown_enable, "0", FCVAR_ARCHIVE, "If set to 1, concs will be thrown straight down when your pitch is 89.\n");
 
 IMPLEMENT_NETWORKCLASS_ALIASED(MomentumConcGrenade, DT_MomentumConcGrenade);
 
@@ -144,9 +144,11 @@ void CMomentumConcGrenade::ThrowGrenade(float flTimer, float flSpeed)
 
     Vector vecForward, vecSrc, vecVelocity;
     QAngle angAngles;
+    float playerPitch;
 
     pOwner->EyeVectors(&vecForward);
     vecSrc = pOwner->GetAbsOrigin() + Vector(0, 0, 36); // Thrown from the waist
+    playerPitch = pOwner->GetLocalAngles().x;
 
     // Online uses angles, but we're packing 3 floats so whatever
     //QAngle vecThrowOnline(vecVelocity.x, vecVelocity.y, vecVelocity.z);
@@ -156,7 +158,15 @@ void CMomentumConcGrenade::ThrowGrenade(float flTimer, float flSpeed)
     const auto pGrenade = dynamic_cast<CMomConcProjectile*>(CreateEntityByName("momentum_concgrenade"));
 
     VectorAngles(vecForward, angAngles);
-    angAngles.x -= CONC_SPAWN_ANG_X;
+
+    if (mom_conc_dropdown_enable.GetBool() && playerPitch >= 89)
+    {
+        angAngles.x = 90;
+    }
+    else
+    {
+        angAngles.x -= CONC_SPAWN_ANG_X;
+    }
 
     UTIL_SetOrigin(pGrenade, vecSrc);
 
