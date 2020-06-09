@@ -622,28 +622,6 @@ void CMomConcProjectile::WaterCheck()
     }
 }
 
-//CMomConcProjectile *CMomConcProjectile::Create(const Vector &position, const QAngle &angles,
-//                                                         const Vector &velocity, const AngularImpulse &angVelocity,
-//                                                         CBaseEntity *pOwner)
-//{
-//    const auto pGrenade = dynamic_cast<CMomConcProjectile *>(CreateNoSpawn("momentum_concgrenade", position, angles, pOwner));
-//    DispatchSpawn(pGrenade);
-//
-//    pGrenade->SetAbsVelocity(velocity);
-//    pGrenade->SetupInitialTransmittedVelocity(velocity);
-//    pGrenade->SetThrower(pOwner);
-//    pGrenade->SetGravity(pGrenade->GetGrenadeGravity());
-//    pGrenade->SetFriction(pGrenade->GetGrenadeFriction());
-//    pGrenade->SetElasticity(pGrenade->GetGrenadeElasticity());
-//    pGrenade->SetDamage(0.0f);
-//    pGrenade->ApplyLocalAngularVelocityImpulse(angVelocity);
-//
-//    pGrenade->SetThink(&CMomConcProjectile::GrenadeThink);
-//    pGrenade->SetNextThink(gpGlobals->curtime);
-//
-//    return pGrenade;
-//}
-
 CMomConcGlow *CMomConcGlow::Create(const Vector &origin, CBaseEntity *pOwner)
 {
     auto *pConcGlow = dynamic_cast<CMomConcGlow*>(CBaseEntity::Create("env_momconcglow", origin, QAngle(0, 0, 0)));

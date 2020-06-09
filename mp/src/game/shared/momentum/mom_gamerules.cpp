@@ -65,18 +65,18 @@ static CViewVectors g_ViewVectorsAhop(Vector(0, 0, 64),      // eye position
                                       Vector(0, 0, 14)       // dead view height
 );
 
-static CViewVectors g_ViewVectorsConc(Vector(0, 0, 28),      // eye position
-                                     Vector(-16, -16, -36),  // hull min
-                                     Vector(16, 16, 36),     // hull max
+static CViewVectors g_ViewVectorsConc(Vector(0, 0, 64),      // eye position
+                                      Vector(-16, -16, 0),   // hull min
+                                      Vector(16, 16, 72),    // hull max
 
-                                     Vector(-16, -16, -18),  // duck hull min
-                                     Vector(16, 16, 18),     // duck hull max
-                                     Vector(0, 0, 12),       // duck view
+                                      Vector(-16, -16, 0),   // duck hull min
+                                      Vector(16, 16, 36),    // duck hull max
+                                      Vector(0, 0, 24),      // duck view
 
-                                     Vector(-10, -10, -10),  // observer hull min
-                                     Vector(10, 10, 10),     // observer hull max
+                                      Vector(-10, -10, -10), // observer hull min
+                                      Vector(10, 10, 10),    // observer hull max
 
-                                     Vector(0, 0, -2)        // dead view height
+                                      Vector(0, 0, 14)       // dead view height
 );
 
 const CViewVectors *CMomentumGameRules::GetViewVectors() const

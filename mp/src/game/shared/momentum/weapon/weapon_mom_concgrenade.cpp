@@ -86,16 +86,6 @@ void CMomentumConcGrenade::PrimaryAttack()
     {
         m_flTimer = gpGlobals->curtime;
     }
-    /*
-    else
-    {
-        float flTimerTotal = gpGlobals->curtime - m_flTimer;
-        if (flTimerTotal >= GetMaxTimer())
-        {
-            m_flTimer = 0.0f;
-        }
-    }
-    */
 
     // Don't let weapon idle interfere in the middle of a throw!
     //SetWeaponIdleTime(gpGlobals->curtime + SequenceDuration());
@@ -104,11 +94,6 @@ void CMomentumConcGrenade::PrimaryAttack()
 }
 
 void CMomentumConcGrenade::SecondaryAttack() {}
-
-bool CMomentumConcGrenade::Reload()
-{
-    return true;
-}
 
 void CMomentumConcGrenade::ItemPostFrame()
 {
@@ -155,63 +140,18 @@ void CMomentumConcGrenade::StartGrenadeThrow() { m_flThrowTime = gpGlobals->curt
 void CMomentumConcGrenade::ThrowGrenade(float flTimer, float flSpeed)
 {
 #ifdef GAME_DLL
-    /*
-    CMomentumPlayer *pPlayer = GetPlayerOwner();
-
-    if (!pPlayer)
-    {
-        Assert(false);
-        return;
-    }
-
-    QAngle angAngles = pPlayer->LocalEyeAngles();
-
-    Vector vecForward, vecRight, vecUp;
-
-    if (angAngles.x < 0.0f)
-        angAngles.x += 360.0f;
-
-    if (angAngles.x < 90.0f)
-        angAngles.x = -18.5f + angAngles.x * (100.0f / 90.0f);
-    else
-    {
-        angAngles.x = 360.0f - angAngles.x;
-        angAngles.x = -18.5f + angAngles.x * -(80.0f / 90.0f);
-    }
-
-    float flVel = (90.0f - angAngles.x) * 6.0f;
-
-    if (flVel > 660.0f)
-        flVel = 660.0f;
-
-    AngleVectors(angAngles, &vecForward, &vecRight, &vecUp);
-
-    Vector vecSrc = pPlayer->GetAbsOrigin(); //+ pPlayer->GetViewOffset();
-
-    // We want to throw the grenade from 8 units out.  But that can cause problems if we're facing
-    // a thin wall.  Do a hull trace to be safe.
-    trace_t trace;
-    Vector mins(-2, -2, -2);
-    Vector maxs(2, 2, 2);
-    UTIL_TraceHull(vecSrc, vecSrc + vecForward * 8.0f, mins, maxs, MASK_SOLID, pPlayer, COLLISION_GROUP_NONE, &trace);
-
-    Vector vecThrow = vecForward * flVel + pPlayer->GetAbsVelocity();
-    */
-
     CMomentumPlayer *pOwner = GetPlayerOwner();
 
     Vector vecForward, vecSrc, vecVelocity;
     QAngle angAngles;
 
     pOwner->EyeVectors(&vecForward);
-    vecSrc = pOwner->GetAbsOrigin(); // + pOwner->GetViewOffset();
+    vecSrc = pOwner->GetAbsOrigin() + Vector(0, 0, 36); // Thrown from the waist
 
     // Online uses angles, but we're packing 3 floats so whatever
     //QAngle vecThrowOnline(vecVelocity.x, vecVelocity.y, vecVelocity.z);
     //DecalPacket packet = DecalPacket::Bullet(vecSrc, vecThrowOnline, AMMO_TYPE_GRENADE, angImpulse.y, 0, 0.0f);
     //g_pMomentumGhostClient->SendDecalPacket(&packet);
-
-    //const auto pGrenade = CMomConcProjectile::Create(vecSrc, angAngles, vecVelocity, angImpulse, pOwner);
 
     const auto pGrenade = dynamic_cast<CMomConcProjectile*>(CreateEntityByName("momentum_concgrenade"));
 
@@ -248,8 +188,7 @@ void CMomentumConcGrenade::ThrowGrenade(float flTimer, float flSpeed)
         pGrenade->SetDetonateTimerLength(GetMaxTimer() - flTimer);
     }
 
-    //DispatchSpawn(pGrenade);
-    pGrenade->Spawn();
+    DispatchSpawn(pGrenade);
     pGrenade->SetAbsVelocity(vecVelocity);
     pGrenade->SetupInitialTransmittedVelocity(vecVelocity);
     pGrenade->SetThrower(pOwner);
@@ -257,9 +196,6 @@ void CMomentumConcGrenade::ThrowGrenade(float flTimer, float flSpeed)
     pGrenade->SetFriction(pGrenade->GetGrenadeFriction());
     pGrenade->SetElasticity(pGrenade->GetGrenadeElasticity());
     pGrenade->SetDamage(0.0f);
-    //pGrenade->ApplyLocalAngularVelocityImpulse(angVelocity);
-    //pGrenade->SetOwnerEntity(pOwner);
-    //pGrenade->SetDetonateTimerLength(flTimer);
     //pGrenade->m_flSpawnTime = gpGlobals->curtime - (3.0f - flTimer); // This shold be done in a neater way!!
 
     pGrenade->SetThink(&CMomConcProjectile::GrenadeThink);

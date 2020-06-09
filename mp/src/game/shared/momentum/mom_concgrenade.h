@@ -81,9 +81,6 @@ class CMomConcProjectile : public CBaseGrenade
     void SetDetonateTimerLength(float timer);
     bool IsInWorld() const;
 
-    //static CMomConcProjectile *Create(const Vector &position, const QAngle &angles, const Vector &velocity,
-    //                                  const AngularImpulse &angVelocity, CBaseEntity *pOwner);
-
     bool m_bHitwater;
     float m_flHitwaterTimer;
 

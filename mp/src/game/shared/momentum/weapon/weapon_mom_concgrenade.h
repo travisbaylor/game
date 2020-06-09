@@ -23,8 +23,6 @@ class CMomentumConcGrenade : public CWeaponBase
     void PrimaryAttack() OVERRIDE;
     void SecondaryAttack() OVERRIDE;
 
-    bool Reload() OVERRIDE;
-
     void ItemPostFrame() OVERRIDE;
 
     void DrawRadius();
