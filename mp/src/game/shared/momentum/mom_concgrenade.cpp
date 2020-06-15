@@ -13,6 +13,7 @@
 #include "cmodel.h"
 #include "clienteffectprecachesystem.h"
 #include "model_types.h"
+#include "hud_concgrenade.h"
 #endif
 
 #define CONC_TRAIL "sprites/conc_trail.vmt"
@@ -92,6 +93,8 @@ void CMomConcProjectile::Spawn()
 #ifdef CLIENT_DLL
     m_flSpawnTime = gpGlobals->curtime;
     m_flNextBounceSoundTime = gpGlobals->curtime;
+    m_pEntPanel = new CHudConcEntPanel();
+    m_pEntPanel->Init(this);
     SetNextClientThink(gpGlobals->curtime);
 #else
     SetModel(g_pWeaponDef->GetWeaponModel(WEAPON_CONCGRENADE, "world"));
@@ -124,6 +127,16 @@ void CMomConcProjectile::Spawn()
 
     SetThink(&CMomConcProjectile::GrenadeThink);
     SetNextThink(gpGlobals->curtime);
+#endif
+}
+
+CMomConcProjectile::~CMomConcProjectile()
+{
+#ifdef CLIENT_DLL
+    if (m_pEntPanel)
+        m_pEntPanel->DeletePanel();
+
+    m_pEntPanel = nullptr;
 #endif
 }
 

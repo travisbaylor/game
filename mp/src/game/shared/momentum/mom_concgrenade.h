@@ -5,6 +5,7 @@
 #include "basegrenade_shared.h"
 
 #ifdef CLIENT_DLL
+class CHudConcEntPanel;
 #define CMomConcProjectile C_MomConcProjectile
 #define CMomConcGlow C_MomConcGlow
 #endif
@@ -35,6 +36,8 @@ class CMomConcProjectile : public CBaseGrenade
   public:
     DECLARE_CLASS(CMomConcProjectile, CBaseGrenade);
     DECLARE_NETWORKCLASS();
+
+    ~CMomConcProjectile();
 
     bool m_bIsHandheld;
     CNetworkVar(bool, m_bIsOn);
@@ -97,6 +100,9 @@ class CMomConcProjectile : public CBaseGrenade
     void DoIdleEffect();
 
     virtual ShadowType_t ShadowCastType() { return SHADOWS_NONE; }
+
+  private:
+    CHudConcEntPanel *m_pEntPanel;
 #endif
   private:
     CHandle<CSpriteTrail> m_pTrail;
