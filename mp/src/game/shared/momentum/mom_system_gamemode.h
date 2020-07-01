@@ -179,6 +179,28 @@ public:
     float GetJumpFactor() override;
 };
 
+// Parkour-specific defines
+#define PK_NORM_SPEED       162.5f
+#define PK_SPRINT_SPEED     320.0f
+#define NUM_TICKS_TO_AIRJUMP 20  // This many ticks must pass before the player can air jump
+
+class CGameMode_Parkour : public CGameModeBase
+{
+public:
+    GameMode_t GetType() override { return GAMEMODE_PARKOUR; }
+    const char *GetStatusString() override { return "Parkouring"; }
+    const char *GetDiscordIcon() override { return "mom_icon_parkour"; }
+    const char *GetMapPrefix() override { return "pk_"; }
+    const char *GetGameModeCfg() override { return "pk.cfg"; }
+    void SetGameModeVars() override;
+    void OnPlayerSpawn(CMomentumPlayer *pPlayer) override;
+    bool WeaponIsAllowed(WeaponID_t weapon) override;
+    bool HasCapability(GameModeHUDCapability_t capability) override;
+
+    float GetViewScale() override { return 1.0f; }
+    float GetJumpFactor() override { return 60.0f; }
+};
+
 class CGameModeSystem : public CAutoGameSystem
 {
 public:
