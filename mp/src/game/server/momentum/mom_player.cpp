@@ -22,6 +22,7 @@
 #include "run/mom_replay_base.h"
 #include "mapzones.h"
 #include "fx_mom_shared.h"
+#include "movevars_shared.h"
 
 #include "tier0/memdbgon.h"
 
@@ -139,6 +140,7 @@ SendPropFloat(SENDINFO(m_fDuckTimer)),
 SendPropBool(SENDINFO(m_bSurfing)),
 SendPropVector(SENDINFO(m_vecRampBoardVel)),
 SendPropVector(SENDINFO(m_vecRampLeaveVel)),
+SendPropBool(SENDINFO(m_bAirJumped)),
 SendPropArray3(SENDINFO_ARRAY3(m_iZoneCount), SendPropInt(SENDINFO_ARRAY(m_iZoneCount), 7, SPROP_UNSIGNED)),
 SendPropArray3(SENDINFO_ARRAY3(m_iLinearTracks), SendPropInt(SENDINFO_ARRAY(m_iLinearTracks), 1, SPROP_UNSIGNED)),
 SendPropDataTable(SENDINFO_DT(m_Data), &REFERENCE_SEND_TABLE(DT_MomRunEntityData)),
@@ -242,6 +244,9 @@ CMomentumPlayer::CMomentumPlayer()
 
     m_bIsWalking = false;
     m_bIsSprinting = false;
+
+    m_bIsPowerSliding = false;
+    m_nWallRunState = WALLRUN_NOT;
 }
 
 CMomentumPlayer::~CMomentumPlayer()
@@ -282,6 +287,10 @@ void CMomentumPlayer::Precache()
     PrecacheScriptSound(SND_FLASHLIGHT_ON);
     PrecacheScriptSound(SND_FLASHLIGHT_OFF);
     PrecacheScriptSound(SND_SPRINT);
+
+    PrecacheScriptSound("Player.AirJump");
+    m_hssPowerSlideSound = PrecacheScriptSound("Player.PowerSlide");
+    m_hssWallRunSound = PrecacheScriptSound("Player.WallRun");
 
     BaseClass::Precache();
 }
@@ -785,7 +794,7 @@ bool CMomentumPlayer::CanSprint() const
 void CMomentumPlayer::ToggleSprint(bool bShouldSprint)
 {
     m_bIsSprinting = bShouldSprint;
-    SetMaxSpeed(bShouldSprint ? AHOP_SPRINT_SPEED : AHOP_NORM_SPEED);
+    DeriveMaxSpeed();
 
     if (bShouldSprint && mom_ahop_sound_sprint_enable.GetBool())
     {
@@ -796,7 +805,30 @@ void CMomentumPlayer::ToggleSprint(bool bShouldSprint)
 void CMomentumPlayer::ToggleWalk(bool bShouldWalk)
 {
     m_bIsWalking = bShouldWalk;
-    SetMaxSpeed(m_bIsWalking ? AHOP_WALK_SPEED : AHOP_NORM_SPEED);
+    DeriveMaxSpeed();
+}
+
+void CMomentumPlayer::DeriveMaxSpeed()
+{
+    float newMaxSpeed;
+    if (m_nWallRunState >= WALLRUN_RUNNING)
+    {
+        newMaxSpeed = sv_wallrun_speed.GetFloat();
+    }
+    else if (m_bIsSprinting)
+    {
+        newMaxSpeed = g_pGameModeSystem->GameModeIs(GAMEMODE_PARKOUR) ? PK_SPRINT_SPEED : AHOP_SPRINT_SPEED;
+    }
+    else if (m_bIsWalking)
+    {
+        newMaxSpeed = AHOP_WALK_SPEED;
+    }
+    else
+    {
+        newMaxSpeed = g_pGameModeSystem->GameModeIs(GAMEMODE_PARKOUR) ? PK_NORM_SPEED : AHOP_NORM_SPEED;
+    }
+
+    SetMaxSpeed(newMaxSpeed);
 }
 
 void CMomentumPlayer::HandleSprintAndWalkChanges()
@@ -827,19 +859,22 @@ void CMomentumPlayer::HandleSprintAndWalkChanges()
         }
     }
 
-    // have suit, pressing button, not sprinting or ducking
-    const auto bWantWalk = (m_nButtons & IN_WALK) && !m_bIsSprinting && !(m_nButtons & IN_DUCK);
-
-    if (m_bIsWalking != bWantWalk)
+    if (g_pGameModeSystem->GameModeIs(GAMEMODE_AHOP))
     {
-        ToggleWalk(bWantWalk);
+        // have suit, pressing button, not sprinting or ducking
+        const auto bWantWalk = (m_nButtons & IN_WALK) && !m_bIsSprinting && !(m_nButtons & IN_DUCK);
+
+        if (m_bIsWalking != bWantWalk)
+        {
+            ToggleWalk(bWantWalk);
+        }
     }
 }
 
 void CMomentumPlayer::PreThink()
 {
     // Handle Ahop related things
-    if (g_pGameModeSystem->GameModeIs(GAMEMODE_AHOP))
+    if (g_pGameModeSystem->GameModeIs(GAMEMODE_AHOP) || g_pGameModeSystem->GameModeIs(GAMEMODE_PARKOUR))
     {
         HandleSprintAndWalkChanges();
     }
