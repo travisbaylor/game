@@ -314,7 +314,6 @@ bool CGameMode_Parkour::HasCapability(GameModeHUDCapability_t capability)
            capability == GameModeHUDCapability_t::CAP_HUD_KEYPRESS_JUMPS;
 }
 
-
 CGameModeSystem::CGameModeSystem() : CAutoGameSystem("CGameModeSystem")
 {
     m_pCurrentGameMode = new CGameModeBase; // Unknown game mode

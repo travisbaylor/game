@@ -182,7 +182,21 @@ public:
 // Parkour-specific defines
 #define PK_NORM_SPEED       162.5f
 #define PK_SPRINT_SPEED     320.0f
-#define NUM_TICKS_TO_AIRJUMP 20  // This many ticks must pass before the player can air jump
+
+#define PK_POWERSLIDE_MIN_SPEED (PK_NORM_SPEED + 5.0f) // must be going faster than this to powerslide
+#define PK_WALLRUN_MAX_Z        20.0f
+#define PK_WALLRUN_MIN_Z        -50.0f
+
+#define PK_SLIDE_TIME           2000.0f // in ms
+#define PK_SLIDE_SPEED_BOOST    75.0f
+#define PK_WALLRUN_TIME         2000.0f
+#define PK_WALLRUN_SPEED        300.0f
+#define PK_WALLRUN_BOOST        60.0f
+
+#define PK_CORNER_ESC_SPEED 80.0f
+#define PK_WALLRUN_OUT_TIME 500.0f // start easing out of the wallrun for last 500 ms
+
+#define PK_WALLRUN_PLANE_MAX_Z 0.5
 
 class CGameMode_Parkour : public CGameModeBase
 {
@@ -198,7 +212,7 @@ public:
     bool HasCapability(GameModeHUDCapability_t capability) override;
 
     float GetViewScale() override { return 1.0f; }
-    float GetJumpFactor() override { return 60.0f; }
+    float GetJumpFactor() override { return 300.0f; } // sqrt( 60 * 2 * 750 )
 };
 
 class CGameModeSystem : public CAutoGameSystem
