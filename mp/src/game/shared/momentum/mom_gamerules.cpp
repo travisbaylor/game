@@ -11,6 +11,7 @@
 #ifndef CLIENT_DLL
 #include "momentum/mapzones.h"
 #include "momentum/mom_player.h"
+#include "momentum/mom_system_tricksurf.h"
 #endif
 
 #include "tier0/memdbgon.h"
@@ -164,18 +165,36 @@ void CMomentumGameRules::ClientCommandKeyValues(edict_t *pEntity, KeyValues *pKe
 {
     BaseClass::ClientCommandKeyValues(pEntity, pKeyValues);
 
+    const auto bIsTricksurf = g_pGameModeSystem->GameModeIs(GAMEMODE_TRICKSURF);
+
     if (FStrEq(pKeyValues->GetName(), "NoZones"))
     {
         // Load if they're available in a file
-        g_MapZoneSystem.LoadZonesFromFile();
+        if (bIsTricksurf)
+        {
+            g_pTricksurfSystem->LoadTrickDataFromFile();
+        }
+        else
+        {
+            g_MapZoneSystem.LoadZonesFromFile();
+        }
     }
     else if (FStrEq(pKeyValues->GetName(), "ZonesFromSite"))
     {
-        if (pKeyValues->FindKey("tracks"))
+        const auto pKeyName = bIsTricksurf ? "tricks" : "tracks";
+        const auto pTrackPtr = pKeyValues->GetPtr(pKeyName);
+        if (pTrackPtr)
         {
-            KeyValuesAD pTracks(static_cast<KeyValues *>(pKeyValues->GetPtr("tracks")));
-            // Zones loaded, pass them through
-            g_MapZoneSystem.LoadZonesFromSite(pTracks, CBaseEntity::Instance(pEntity));
+            KeyValuesAD pData(static_cast<KeyValues *>(pTrackPtr));
+            
+            if (bIsTricksurf)
+            {
+                g_pTricksurfSystem->LoadTrickDataFromSite(pData);
+            }
+            else
+            {
+                g_MapZoneSystem.LoadZonesFromSite(pData, CBaseEntity::Instance(pEntity));
+            }
         }
     }
 }

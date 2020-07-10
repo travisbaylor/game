@@ -10,6 +10,7 @@
 #include "fmtstr.h"
 #include "mom_timer.h"
 #include "mom_modulecomms.h"
+#include "mom_system_tricksurf.h"
 
 #include "dt_utlvector_send.h"
 
@@ -396,6 +397,8 @@ CTriggerTrickZone::CTriggerTrickZone()
 void CTriggerTrickZone::Spawn()
 {
     BaseClass::Spawn();
+
+    g_pTricksurfSystem->AddZone(this);
 }
 
 int CTriggerTrickZone::GetZoneType()
@@ -421,10 +424,20 @@ bool CTriggerTrickZone::ToKeyValues(KeyValues* pKvInto)
 
 void CTriggerTrickZone::OnStartTouch(CBaseEntity *pOther)
 {
+    if (pOther->IsPlayer())
+    {
+        const auto pMomPlayer = ToCMOMPlayer(pOther);
+        g_pTricksurfSystem->OnTrickZoneEnter(this, pMomPlayer);
+    }
 }
 
 void CTriggerTrickZone::OnEndTouch(CBaseEntity *pOther)
 {
+    if (pOther->IsPlayer())
+    {
+        const auto pMomPlayer = ToCMOMPlayer(pOther);
+        g_pTricksurfSystem->OnTrickZoneExit(this, pMomPlayer);
+    }
 }
 
 //----------- CTriggerTeleport -----------------------------------------------------------------
