@@ -248,6 +248,30 @@ public:
     int GetZoneType() OVERRIDE;
 };
 
+class CTriggerTrickZone : public CBaseMomZoneTrigger
+{
+public:
+    DECLARE_CLASS(CTriggerTrickZone, CBaseMomZoneTrigger);
+    DECLARE_NETWORKCLASS();
+
+    CTriggerTrickZone();
+
+    void Spawn() override;
+
+    int UpdateTransmitState() override { return SetTransmitState(FL_EDICT_ALWAYS); }
+
+    int GetZoneType() override;
+
+    bool LoadFromKeyValues(KeyValues* pKvFrom) override;
+    bool ToKeyValues(KeyValues* pKvInto) override;
+
+    void OnStartTouch(CBaseEntity* pOther) override;
+    void OnEndTouch(CBaseEntity* pOther) override;
+
+    CNetworkVar(int, m_iID);
+    CNetworkString(m_szZoneName, 32);
+};
+
 // Our teleport trigger override with extra convenience features
 class CTriggerMomentumTeleport : public CBaseMomentumTrigger
 {

@@ -380,6 +380,53 @@ int CTriggerTimerStop::GetZoneType()
 
 //----------------------------------------------------------------------------------------------
 
+LINK_ENTITY_TO_CLASS(trigger_momentum_trick, CTriggerTrickZone);
+
+IMPLEMENT_SERVERCLASS_ST(CTriggerTrickZone, DT_TriggerTrickZone)
+SendPropInt(SENDINFO(m_iID), -1, SPROP_UNSIGNED),
+SendPropString(SENDINFO(m_szZoneName)),
+END_SEND_TABLE();
+
+CTriggerTrickZone::CTriggerTrickZone()
+{
+    m_iID = -1;
+    m_szZoneName.GetForModify()[0] = '\0';
+}
+
+void CTriggerTrickZone::Spawn()
+{
+    BaseClass::Spawn();
+}
+
+int CTriggerTrickZone::GetZoneType()
+{
+    return ZONE_TYPE_TRICK;
+}
+
+bool CTriggerTrickZone::LoadFromKeyValues(KeyValues* pKvFrom)
+{
+    m_iID = Q_atoi(pKvFrom->GetName());
+    Q_strncpy(m_szZoneName.GetForModify(), pKvFrom->GetString("name", "NOT NAMED!!!!! ERROR!"), 32);
+
+    return BaseClass::LoadFromKeyValues(pKvFrom);
+}
+
+bool CTriggerTrickZone::ToKeyValues(KeyValues* pKvInto)
+{
+    pKvInto->SetName(CFmtStr("%i", m_iID.Get()));
+    pKvInto->SetString("name", m_szZoneName);
+
+    return BaseClass::ToKeyValues(pKvInto);
+}
+
+void CTriggerTrickZone::OnStartTouch(CBaseEntity *pOther)
+{
+}
+
+void CTriggerTrickZone::OnEndTouch(CBaseEntity *pOther)
+{
+}
+
 //----------- CTriggerTeleport -----------------------------------------------------------------
 LINK_ENTITY_TO_CLASS(trigger_momentum_teleport, CTriggerMomentumTeleport);
 

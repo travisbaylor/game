@@ -205,6 +205,33 @@ bool C_TriggerCheckpoint::GetOutlineColor()
     return MomUtil::GetColorFromHex(mom_zone_checkpoint_outline_color.GetString(), m_OutlineRenderer.outlineColor);
 }
 
+// ====================================
+
+LINK_ENTITY_TO_CLASS(trigger_momentum_trick, C_TriggerTrickZone);
+
+IMPLEMENT_CLIENTCLASS_DT(C_TriggerTrickZone, DT_TriggerTrickZone, CTriggerTrickZone)
+RecvPropInt(RECVINFO(m_iID)),
+RecvPropString(RECVINFO(m_szZoneName)),
+END_RECV_TABLE();
+
+C_TriggerTrickZone::C_TriggerTrickZone()
+{
+    m_iID = 0;
+    m_szZoneName.GetForModify()[0] = '\0';
+}
+
+bool C_TriggerTrickZone::ShouldDrawOutline()
+{
+    return true;
+}
+
+bool C_TriggerTrickZone::GetOutlineColor()
+{
+    m_OutlineRenderer.outlineColor = COLOR_ORANGE;
+    return true;
+}
+
+// ======================================
 LINK_ENTITY_TO_CLASS(trigger_momentum_slide, C_TriggerSlide);
 
 IMPLEMENT_CLIENTCLASS_DT(C_TriggerSlide, DT_TriggerSlide, CTriggerSlide)
